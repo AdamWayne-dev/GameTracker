@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="GameTracker.Bot/GameTracker.Bot.csproj" />
+  <Project Path="GameTracker.Core/GameTracker.Core.csproj" />
+  <Project Path="GameTracker.Infrastructure/GameTracker.Infrastructure.csproj" />
+  <Project Path="GameTracker.Web/GameTracker.Web.csproj" />
+</Solution>
