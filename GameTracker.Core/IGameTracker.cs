@@ -1,4 +1,4 @@
-﻿namespace GameTracker.Core;
+﻿using GameTracker.Core;
 
 public interface IGameTracker
 {

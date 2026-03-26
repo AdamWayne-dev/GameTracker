@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="3.19.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GameTracker.Core\GameTracker.Core.csproj" />
     <ProjectReference Include="..\GameTracker.Infrastructure\GameTracker.Infrastructure.csproj" />
   </ItemGroup>

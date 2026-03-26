@@ -6,41 +6,36 @@ public class WordleSummaryTracker : IGameTracker
 {
     public string GameKey => "wordle";
 
-    // Matches sections like:
-    // 2/6: @Ryan
-    // 3/6: @fonz @Amy @Smay
     private static readonly Regex ScoreSegment =
         new(@"(?<tries>[1-6])/6:\s*(?<rest>.*?)(?=(?:[1-6]/6:)|\z)",
             RegexOptions.Compiled | RegexOptions.Singleline);
 
-    // Matches @name tokens in the segment
     private static readonly Regex AtName =
         new(@"@(?<name>[^\s@]+)", RegexOptions.Compiled);
 
-    // Tries to find the Wordle number in the recap
-    private static readonly Regex PuzzleNumberRegex =
-        new(@"Wordle\s+(?:No\.\s*)?(?<puzzle>\d+)",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
     public bool CanHandle(string message)
     {
-        return message.Contains("Wordle", StringComparison.OrdinalIgnoreCase)
-            && message.Contains("/6:");
+        if (string.IsNullOrWhiteSpace(message))
+            return false;
+
+        return message.Contains("/6:");
     }
 
     public IReadOnlyList<GameResult> Parse(string message, DateTime submittedAtUtc)
     {
         var results = new List<GameResult>();
 
-        var puzzleMatch = PuzzleNumberRegex.Match(message);
-        if (!puzzleMatch.Success)
+        if (string.IsNullOrWhiteSpace(message))
             return results;
 
-        var roundKey = puzzleMatch.Groups["puzzle"].Value;
+        var roundDate = submittedAtUtc.Date.AddDays(-1);
+        var roundKey = roundDate.ToString("yyyy-MM-dd");
 
         foreach (Match segment in ScoreSegment.Matches(message))
         {
-            var tries = int.Parse(segment.Groups["tries"].Value);
+            if (!int.TryParse(segment.Groups["tries"].Value, out var tries))
+                continue;
+
             var rest = segment.Groups["rest"].Value;
 
             foreach (Match playerMatch in AtName.Matches(rest))
@@ -48,7 +43,7 @@ public class WordleSummaryTracker : IGameTracker
                 var rawName = playerMatch.Groups["name"].Value;
                 var canonicalHandle = PlayerIdentityResolver.CanonicalizeHandle(rawName);
 
-                if (string.IsNullOrWhiteSpace(canonicalHandle))
+                if (string.IsNullOrWhiteSpace(canonicalHandle) || canonicalHandle.All(char.IsDigit))
                     continue;
 
                 results.Add(new GameResult
