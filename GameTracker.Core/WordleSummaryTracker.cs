@@ -13,12 +13,13 @@ public class WordleSummaryTracker : IGameTracker
     private static readonly Regex AtName =
         new(@"@(?<name>[^\s@]+)", RegexOptions.Compiled);
 
+    // A method to determine if the message that is parsed is compatible with the wordle tracker.
     public bool CanHandle(string message)
     {
         if (string.IsNullOrWhiteSpace(message))
             return false;
 
-        return message.Contains("/6:");
+        return Regex.IsMatch(message,@"[1-6]/6");
     }
 
     public IReadOnlyList<GameResult> Parse(string message, DateTime submittedAtUtc)
