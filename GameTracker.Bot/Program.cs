@@ -1,9 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using GameTracker.Bot;
 using GameTracker.Core;
+using GameTracker.Infrastructure;
 using dotenv.net;
 
+namespace GameTracker.Bot;
 class Program
 {
     private static DiscordSocketClient _client = null!;
@@ -20,7 +21,7 @@ class Program
             Console.WriteLine("Missing DISCORD_TOKEN");
             return;
         }
-
+        // Config setup
         var config = new DiscordSocketConfig
         {
             GatewayIntents =
@@ -31,12 +32,13 @@ class Program
 
         _client = new DiscordSocketClient(config);
 
-        // Setup trackers
+        // Tracker(s) setup
         _trackingService = new GameTrackerService(
             new List<IGameTracker>
             {
                 new WordleSummaryTracker()
-            });
+            },
+            new ConsoleGameResultsRepository());
 
         _client.Log += msg =>
         {
@@ -53,7 +55,11 @@ class Program
         Console.WriteLine("Bot running...");
         await Task.Delay(-1);
     }
-
+    /// <summary>
+    /// Processes and cleans the message received from Discord, with an additional debugging print to console.
+    /// </summary>
+    /// <param name="message">The incoming message from Discord</param>
+    /// <returns></returns>
     private static async Task OnMessageReceivedAsync(SocketMessage message)
     {
         // ************************  TODO: CHANGE BACK ONCE TESTING IS COMPLETE ****************************
@@ -67,15 +73,13 @@ class Program
         var cleanedText = DiscordMessageTextHelper.ExpandMentionsToText(message);
 
         // Step 2: process
-        var results = _trackingService.ProcessMessage(
-            cleanedText,
-            message.Timestamp.UtcDateTime);
+        var savedCount = await _trackingService.ProcessMessageAsync(
+        cleanedText,
+        message.Timestamp.UtcDateTime);
 
-        // Step 3: debug output
-        foreach (var result in results)
+        if (savedCount > 0)
         {
-            Console.WriteLine(
-                $"{result.PlayerId} -> {result.NumericScore} ({result.RoundKey})");
+            Console.WriteLine($"Saved {savedCount} result(s).");
         }
     }
 }

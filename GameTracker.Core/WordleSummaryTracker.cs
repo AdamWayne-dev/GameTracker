@@ -13,7 +13,11 @@ public class WordleSummaryTracker : IGameTracker
     private static readonly Regex AtName =
         new(@"@(?<name>[^\s@]+)", RegexOptions.Compiled);
 
-    // A method to determine if the message that is parsed is compatible with the wordle tracker.
+    /// <summary>
+    /// Determines if the message that is parsed is compatible with the wordle tracker using Regex.
+    /// </summary>
+    /// <param name="message">The message received from Discord</param>
+    /// <returns>True or false, depending on the outcome of the regex match</returns>
     public bool CanHandle(string message)
     {
         if (string.IsNullOrWhiteSpace(message))
@@ -21,7 +25,12 @@ public class WordleSummaryTracker : IGameTracker
 
         return Regex.IsMatch(message,@"[1-6]/6");
     }
-
+    /// <summary>
+    /// Parses the incoming message using Regex and then assigns the various outcomes to the results entry.
+    /// </summary>
+    /// <param name="message">The message received from Discord</param>
+    /// <param name="submittedAtUtc">The date/time the message was submitted on Discord</param>
+    /// <returns>The parsed and assigned results</returns>
     public IReadOnlyList<GameResult> Parse(string message, DateTime submittedAtUtc)
     {
         var results = new List<GameResult>();

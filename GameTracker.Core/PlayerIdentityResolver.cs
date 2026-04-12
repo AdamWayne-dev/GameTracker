@@ -23,7 +23,11 @@ public static class PlayerIdentityResolver
 
             ["adam"] = "adam",
         };
-
+    /// <summary>
+    /// Normalizes the users discord handle, stripping away any extra text or symbols and then convering it to lower case.
+    /// </summary>
+    /// <param name="raw">The raw handle</param>
+    /// <returns>The converted raw handle</returns>
     public static string NormalizeHandle(string raw)
     {
         if (string.IsNullOrWhiteSpace(raw))
@@ -42,6 +46,11 @@ public static class PlayerIdentityResolver
         return raw;
     }
 
+    /// <summary>
+    /// Returns the canonical handle if it exists in the HandleAliases dictionary, otherwise it normalises the handle.
+    /// </summary>
+    /// <param name="raw"></param>
+    /// <returns>The canonical or normalised handle</returns>
     public static string CanonicalizeHandle(string raw)
     {
         var normalized = NormalizeHandle(raw);
