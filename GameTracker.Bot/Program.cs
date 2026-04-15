@@ -10,8 +10,11 @@ class Program
     private static DiscordSocketClient _client = null!;
     private static GameTrackerService _trackingService = null!;
 
+    public const string connectionString = "Data Source=wordle.db";
+    
     static async Task Main()
     {
+        SQLitePCL.Batteries.Init();
         DotEnv.Load();
 
         var token = Environment.GetEnvironmentVariable("DISCORD_TOKEN");
@@ -31,14 +34,18 @@ class Program
         };
 
         _client = new DiscordSocketClient(config);
-
+        await GameResultsDbInitialiser.InitialiseAsync(connectionString);
+        var resultRepository = new SqliteGameResultRepository(connectionString);
         // Tracker(s) setup
         _trackingService = new GameTrackerService(
             new List<IGameTracker>
             {
                 new WordleSummaryTracker()
             },
-            new ConsoleGameResultsRepository());
+            resultRepository);
+
+        
+        
 
         _client.Log += msg =>
         {
@@ -53,6 +60,7 @@ class Program
         await _client.StartAsync();
 
         Console.WriteLine("Bot running...");
+
         await Task.Delay(-1);
     }
     /// <summary>

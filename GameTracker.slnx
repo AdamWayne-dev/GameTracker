@@ -2,5 +2,6 @@
   <Project Path="GameTracker.Bot/GameTracker.Bot.csproj" />
   <Project Path="GameTracker.Core/GameTracker.Core.csproj" />
   <Project Path="GameTracker.Infrastructure/GameTracker.Infrastructure.csproj" />
+  <Project Path="GameTracker.Test/GameTracker.Tests.csproj" Id="48c92e3c-0b46-4f20-8c78-704bf49b782c" />
   <Project Path="GameTracker.Web/GameTracker.Web.csproj" />
 </Solution>

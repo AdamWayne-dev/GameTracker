@@ -29,7 +29,6 @@ public class SqliteGameResultRepository: IGameResultRepository
                 PlayerName,
                 RoundKey,
                 NumericScore,
-                ScoreType,
                 IsSuccess,
                 RawMessage,
                 SubmittedAtUtc
@@ -40,7 +39,6 @@ public class SqliteGameResultRepository: IGameResultRepository
                 $playerName,
                 $roundKey,
                 $numericScore,
-                $scoreType,
                 $isSuccess,
                 $rawMessage,
                 $submittedAtUtc
@@ -56,7 +54,6 @@ public class SqliteGameResultRepository: IGameResultRepository
             else
                 command.Parameters.AddWithValue("$numericScore", DBNull.Value);
 
-            command.Parameters.AddWithValue("$scoreType", (int)result.ScoreType);
             command.Parameters.AddWithValue("$isSuccess", result.IsSuccess ? 1 : 0);
             command.Parameters.AddWithValue("$rawMessage", result.RawMessage);
             command.Parameters.AddWithValue("$submittedAtUtc", result.SubmittedAtUtc.ToString("O"));
